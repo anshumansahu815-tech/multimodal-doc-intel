@@ -145,7 +145,7 @@ if uploaded_file and st.button("Process Document", type="primary"):
 
             except Exception as err:
                 if doc_type == "Invoice / Receipt":
-                    st.info("ℹ️ Live API temporarily unavailable. Displaying pre-validated baseline report data:")
+                    st.info(f"ℹ️ Live API temporarily unavailable ({err}). Displaying pre-validated baseline report data:")
                     extracted_json = MOCK_INVOICE_JSON
                     summary_text = MOCK_INVOICE_SUMMARY
                 else:
