@@ -24,16 +24,16 @@ client = genai.Client(api_key=api_key)
 
 # Resilient request handler with dynamic model fallback and exponential backoff
 def execute_gemini_call(contents, config=None, max_retries=3):
-    preferred_models = ["gemini-3.6-flash", "gemini-2.0-flash", "gemini-1.5-flash"]
+    preferred_models = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]
     
     # Query active models on this key to avoid 404 errors
     try:
         available_models = [m.name.split("/")[-1] for m in client.models.list()]
         candidate_models = [m for m in preferred_models if m in available_models]
         if not candidate_models:
-            candidate_models = ["gemini-3.6-flash"]
+            candidate_models = ["gemini-2.5-flash"]
     except Exception:
-        candidate_models = ["gemini-3.6-flash"]
+        candidate_models = ["gemini-2.5-flash"]
 
     last_error = None
     for model_name in candidate_models:
