@@ -185,16 +185,29 @@ if uploaded_file and st.button("Process Document", type="primary"):
                     summary_text = MOCK_CHART_SUMMARY
 
             # Step C: Readability Scoring and Tabulated Display
-            if extracted_json and summary_text:
-                ease = textstat.flesch_reading_ease(summary_text)
-                grade = textstat.flesch_kincaid_grade(summary_text)
+if extracted_json and summary_text:
+    ease = textstat.flesch_reading_ease(summary_text)
+    grade = textstat.flesch_kincaid_grade(summary_text)
 
-                tab1, tab2, tab3 = st.tabs(["Plain Summary", "Structured JSON", "Quality Metrics"])
-                with tab1:
-                    st.markdown(summary_text)
-                with tab2:
-                    st.json(extracted_json)
-                with tab3:
-                    m1, m2 = st.columns(2)
-                    m1.metric("Flesch Reading Ease", f"{ease:.1f}", delta="Target: > 60")
-                    m2.metric("Reading Grade Level", f"Grade {grade:.1f}", delta="Target: <= Grade 8", delta_color="inverse")
+    is_ease_ok = ease >= 60.0
+    is_grade_ok = grade <= 8.0
+
+    tab1, tab2, tab3 = st.tabs(["Plain Summary", "Structured JSON", "Quality Metrics"])
+    with tab1:
+        st.markdown(summary_text)
+    with tab2:
+        st.json(extracted_json)
+    with tab3:
+        m1, m2 = st.columns(2)
+        m1.metric(
+            label="Flesch Reading Ease",
+            value=f"{ease:.1f}",
+            delta="Passed (Target > 60)" if is_ease_ok else "Needs Work (Target > 60)",
+            delta_color="normal" if is_ease_ok else "inverse"
+        )
+        m2.metric(
+            label="Reading Grade Level",
+            value=f"Grade {grade:.1f}",
+            delta="Passed (Target ≤ Grade 8)" if is_grade_ok else "Too Complex (Target ≤ Grade 8)",
+            delta_color="normal" if is_grade_ok else "inverse"
+        )
